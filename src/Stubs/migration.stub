@@ -1,0 +1,21 @@
+<?php
+
+use WpHelperMigrations\AbstractMigration;
+
+class {{ class }} extends AbstractMigration {
+
+	/**
+	 * Run the migration.
+	 */
+	public function run() {
+		{{ run }}
+	}
+
+	/**
+	 * Optional: Roll back the migration.
+	 */
+	public function rollback() {
+		{{ rollback }}
+	}
+
+}

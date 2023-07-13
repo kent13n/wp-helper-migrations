@@ -1,0 +1,16 @@
+{
+    "name": "kentin/wp-helper-migrations",
+    "description": "WP Helper Migrations allows you to effortlessly create migrations for existings content.",
+    "autoload": {
+        "psr-4": {
+            "WpHelperMigrations\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Quentin Jallet",
+            "email": "quentin@netby.io"
+        }
+    ],
+    "require": {}
+}
