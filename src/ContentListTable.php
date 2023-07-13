@@ -139,7 +139,7 @@ class ContentListTable extends \WP_List_Table
         switch ($column_name) {
             case 'date':
                 $t_time    = get_the_time('Y/m/d g:i:s a', $item['id']);
-                $time      = get_post_timestamp($item['id']);
+                $time      = get_post_timestamp($item['id'], 'modified');
                 $time_diff = time() - $time;
 
                 if ($time && $time_diff > 0 && $time_diff < DAY_IN_SECONDS) {
@@ -152,12 +152,20 @@ class ContentListTable extends \WP_List_Table
                 $result = '<span title="' . $t_time . '">' . apply_filters('post_date_column_time', $h_time, $item['id'], 'date', 'list') . '</span>';
                 break;
 
-            case 'author':
-                $result = $item['author'];
-                break;
-
             case 'type':
                 $result = $item['type'];
+                break;
+            case 'migrate':
+                if ($item['migrate'] === 0) $result = 'No migration';
+                else {
+                    if (time() - $item['migrate'] < DAY_IN_SECONDS) {
+                        $h_time = sprintf(__('%s ago', 'wp-helper-migrations'), human_time_diff($item['migrate']));
+                    } else {
+                        $h_time = date('Y/m/d', $item['migrate']);
+                    }
+
+                    $result = '<span title="' . date('Y/m/d g:i:s a', $item['migrate']) . '">' . $h_time . '</span>';
+                }
                 break;
         }
 
@@ -172,11 +180,11 @@ class ContentListTable extends \WP_List_Table
     public function get_columns()
     {
         return [
-            'cb'     => '<input type="checkbox"/>',
-            'title'  => __('Title', 'wp-helper-migrations'),
-            'type'   => __('Type', 'wp-helper-migrations'),
-            'author' => __('Author', 'wp-helper-migrations'),
-            'date'   => __('Date', 'wp-helper-migrations'),
+            'cb'        => '<input type="checkbox"/>',
+            'title'     => __('Title', 'wp-helper-migrations'),
+            'type'      => __('Type', 'wp-helper-migrations'),
+            'date'      => __('Date', 'wp-helper-migrations'),
+            'migrate'   => __('Migration', 'wp-helper-migrations')
         ];
     }
 
@@ -203,7 +211,6 @@ class ContentListTable extends \WP_List_Table
         // Get actions.
         $actions = [
             'migrate' => '<a href="' . esc_url($migrate_link) . '" class="migrate">' . __('Migrate', 'wp-helper-migrations') . '</a>',
-            'edit'  => '<a href="' . esc_url($edit_url) . '">' . __('Edit', 'wp-helper-migrations') . '</a>',
             'view'  => '<a href="' . esc_url($post_link) . '">' . __('View', 'wp-helper-migrations') . '</a>',
         ];
 
@@ -257,13 +264,15 @@ class ContentListTable extends \WP_List_Table
             while ($get_posts_obj->have_posts()) {
 
                 $get_posts_obj->the_post();
+                $wp_helper_migration = get_post_meta(get_the_ID(), '_wp_helper_migrations_id', true);
+                $migration_time = $wp_helper_migration ? MigrationHandler::GetLastMigrationDate($wp_helper_migration) : 0;
 
                 $data[get_the_ID()] = [
                     'id'     => get_the_ID(),
                     'title'  => get_the_title(),
                     'type'   => ucwords(get_post_type_object(get_post_type())->labels->singular_name),
                     'date'   => get_post_datetime(),
-                    'author' => get_the_author(),
+                    'migrate' => $migration_time === 0 ? 0 : $migration_time->getTimestamp(),
                 ];
             }
             wp_reset_postdata();
@@ -334,7 +343,7 @@ class ContentListTable extends \WP_List_Table
         if (is_wp_error($errors)) {
             if (count($errors->errors) > 0) {
                 echo '<div id="message" class="error">';
-                foreach($errors->errors as $e) {
+                foreach ($errors->errors as $e) {
                     echo '<p>' . $e[0] . '</p>';
                 }
                 echo '</div>';
@@ -353,13 +362,7 @@ class ContentListTable extends \WP_List_Table
     {
 ?>
         <div class="tablenav <?php echo esc_attr($which); ?>">
-
-            <?php if ($this->has_items()) : ?>
-                <div class="alignleft actions bulkactions">
-                    <?php $this->bulk_actions($which); ?>
-                </div>
             <?php
-            endif;
             $this->extra_tablenav($which);
             $this->pagination($which);
             ?>
@@ -444,7 +447,6 @@ class ContentListTable extends \WP_List_Table
             'title'  => ['title', false],
             'type'   => ['type', false],
             'date'   => ['date', false],
-            'author' => ['author', false],
         ];
     }
 }

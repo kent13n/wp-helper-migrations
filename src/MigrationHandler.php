@@ -2,6 +2,8 @@
 
 namespace WpHelperMigrations;
 
+use DateTime;
+
 class MigrationHandler
 {
     private static function EnsureMigrationPathExist()
@@ -32,6 +34,23 @@ class MigrationHandler
             }
         }
         return $results;
+    }
+
+    public static function GetLastMigrationDate($uuid): DateTime
+    {
+        $files = self::GetMigrationFiles($uuid);
+        $ts = false;
+        
+        foreach ($files as $file) {
+            $timestamp = self::ExtractTimestamp(basename($file, '.php'));
+            if ($ts === false || $timestamp > $ts) {
+                $ts = $timestamp;
+            }
+        }
+
+        $datetime = new DateTime();
+        $datetime->setTimestamp($ts);
+        return $datetime;
     }
 
     public static function GetMigrationsAlreadyExecuted()
@@ -72,6 +91,12 @@ class MigrationHandler
 
         self::SetMigrationAsExecuted(self::GenerateClassName($filename));
         return $success;
+    }
+
+    public static function ExtractTimestamp(string $filename): int
+    {
+        $ts = explode('_', $filename)[0];
+        return (int) $ts;
     }
 
     public static function GenerateClassName(string $filename): string
