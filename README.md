@@ -78,4 +78,4 @@ This plugin is released under the [MIT License](LICENSE).
 
 ## Credits
 
-Wp Helper Migrations is developed and maintained by [Quentin Jallet](https://your-website.com).
+Wp Helper Migrations is developed and maintained by [Quentin Jallet](https://github.com/kent13n/).
