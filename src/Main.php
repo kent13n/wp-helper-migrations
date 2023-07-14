@@ -13,7 +13,6 @@ class Main
         add_action('admin_head', [$this, 'SetHead']);
         add_action('before_delete_post', [$this, 'CreateDeletePostMigration']);
         add_action('delete_attachment', [$this, 'CreateDeleteAttachmentMigation']);
-        add_action('admin_notices', [$this, 'DisplayGlobalErrors']);
 
         if (defined('WP_CLI') && WP_CLI) {
             \WP_CLI::add_command('migrate', Migrate::class);
@@ -66,15 +65,10 @@ class Main
         echo '<script>jQuery(document).ready(function() { window.history.replaceState({additionalInformation: "URL Updated"}, "Wp Helper Migrations", "' . $url . '") });</script>';
     }
 
-    public function DisplayGlobalErrors()
-    {
-        global $errors;
-    }
-
     public function Render()
     {
         $data_table = new ContentListTable();
-?>
+    ?>
         <div class="wrap">
             <h2><?php esc_html_e('WP Helper Migrations', 'wp-helper-migrations') ?></h2>
             <form id="wp-helper-migrations" method="get">

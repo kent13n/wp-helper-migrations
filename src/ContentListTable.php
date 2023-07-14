@@ -348,6 +348,10 @@ class ContentListTable extends \WP_List_Table
                 }
                 echo '</div>';
             }
+        } else {
+            echo '<div class="updated notice">';
+            echo '<p>' . __('La migration a bien été effectuée.', 'wp-helper-migrations') . '</p>';
+            echo '</div>';
         }
     }
 
