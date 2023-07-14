@@ -17,6 +17,31 @@ Wp Helper Migrations is a WordPress plugin that simplifies the process of creati
 3. Click on the "Upload Plugin" button and choose the ZIP file you downloaded.
 4. Activate the plugin after the installation is complete.
 
+You can also install WP Helper Migrations using Composer :
+```
+composer require kent13n/wp-helper-migrations
+```
+Then run
+```
+composer install
+```
+To activate WP Helper Migrations plugin, you can create a mu-plugin (must-use plugin) and include the following code:
+```
+<?php
+/*
+Plugin Name: WP Helper Migrations
+Description: Plugin for creating migrations for pages, posts, and media items.
+*/
+
+new \WpHelperMigrations\Main(__FILE__);
+```
+
+Create a new file with a .php extension (e.g., wp-helper-migrations.php) and place it inside the wp-content/mu-plugins directory. If the mu-plugins directory doesn't exist, you can create it.
+
+When WordPress loads, it will automatically activate the mu-plugin, and the WP Helper Migrations plugin will be ready to use.
+
+For more information about mu-plugins, refer to the [WordPress Plugin Handbook](https://developer.wordpress.org/advanced-administration/plugins/mu-plugins/).
+
 ## Usage
 
 ### Creating a Migration
