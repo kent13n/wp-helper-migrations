@@ -10,7 +10,7 @@ class Main
     {
         register_activation_hook($plugin_main_file, [$this, 'Activate']);
         add_action('admin_menu', [$this, 'CreateAdminMenu']);
-        add_action('admin_head', [$this, 'SetStyles']);
+        add_action('admin_head', [$this, 'SetHead']);
         add_action('before_delete_post', [$this, 'CreateDeletePostMigration']);
         add_action('delete_attachment', [$this, 'CreateDeleteAttachmentMigation']);
         add_action('admin_notices', [$this, 'DisplayGlobalErrors']);
@@ -52,8 +52,9 @@ class Main
         Migrator::Generate($post_id, Enums\Mode::Delete);
     }
 
-    public function SetStyles()
+    public function SetHead()
     {
+        $url = admin_url("admin.php?page=wp-helper-migrations");
         $page = esc_attr(filter_input(INPUT_GET, 'page'));
         if ($page !== 'wp-helper-migrations')
             return;
@@ -62,6 +63,7 @@ class Main
         echo '.wp-list-table .column-type {width: 10%;}';
         echo '.wp-list-table a.migrate {color: #00a32a;}';
         echo '</style>';
+        echo '<script>jQuery(document).ready(function() { window.history.replaceState({additionalInformation: "URL Updated"}, "Wp Helper Migrations", "' . $url . '") });</script>';
     }
 
     public function DisplayGlobalErrors()
