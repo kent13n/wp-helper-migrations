@@ -19,7 +19,7 @@ Wp Helper Migrations is a WordPress plugin that simplifies the process of creati
 
 You can also install WP Helper Migrations using Composer :
 ```
-composer require kent13n/wp-helper-migrations
+composer require --dev kent13n/wp-helper-migrations
 ```
 Then run
 ```

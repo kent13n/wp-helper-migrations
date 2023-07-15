@@ -8,7 +8,7 @@ class Main
 {
     public function __construct($plugin_main_file)
     {
-        register_activation_hook($plugin_main_file, [$this, 'Activate']);
+        $this->Setup();
         add_action('admin_menu', [$this, 'CreateAdminMenu']);
         add_action('admin_head', [$this, 'SetHead']);
         add_action('before_delete_post', [$this, 'CreateDeletePostMigration']);
@@ -19,13 +19,20 @@ class Main
         }
     }
 
-    public function Activate()
+    public function Setup(): bool
     {
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+        
         global $wpdb;
         $collation = $wpdb->has_cap('collation') ? $wpdb->get_charset_collate('collation') : '';
+        $table = $wpdb->prefix . 'helper_migrations';
+
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$table}';") === $table) {
+            return false;
+        }
 
         $sql = "
-            CREATE TABLE IF NOT EXISTS {$wpdb->prefix}helper_migrations (
+            CREATE TABLE IF NOT EXISTS {$table} (
                 id bigint(20) NOT NULL AUTO_INCREMENT,
                 name varchar(255) NOT NULL,
                 created_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -34,6 +41,7 @@ class Main
         ";
 
         dbDelta($sql);
+        return true;
     }
 
     public function CreateAdminMenu()
@@ -68,7 +76,7 @@ class Main
     public function Render()
     {
         $data_table = new ContentListTable();
-    ?>
+?>
         <div class="wrap">
             <h2><?php esc_html_e('WP Helper Migrations', 'wp-helper-migrations') ?></h2>
             <form id="wp-helper-migrations" method="get">
