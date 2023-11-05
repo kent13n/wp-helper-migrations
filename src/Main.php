@@ -21,8 +21,8 @@ class Main
 
     public function Setup(): bool
     {
-        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-        
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
         global $wpdb;
         $collation = $wpdb->has_cap('collation') ? $wpdb->get_charset_collate('collation') : '';
         $table = $wpdb->prefix . 'helper_migrations';
@@ -76,18 +76,28 @@ class Main
     public function Render()
     {
         $data_table = new ContentListTable();
-?>
+        ?>
         <div class="wrap">
             <h2><?php esc_html_e('WP Helper Migrations', 'wp-helper-migrations') ?></h2>
             <form id="wp-helper-migrations" method="get">
-                <input type="hidden" name="page" value="wp-helper-migrations" />
+                <input type="hidden" name="page" value="wp-helper-migrations"/>
                 <?php
                 $data_table->prepare_items();
                 $data_table->search_box('Search', 'search');
                 $data_table->display();
                 ?>
             </form>
+
+            <h2 style="margin-top: 150px;"><?php esc_html_e('Migrations des menus', 'wp-helper-migrations') ?></h2>
+            <form id="wp-helper-nav-migrations" method="get">
+                <input type="hidden" name="menu" value="wp-helper-migrations"/>
+                <?php
+                $data_table->prepare_nav_items();
+                $data_table->search_box('Search', 'search');
+                $data_table->display();
+                ?>
+            </form>
         </div>
-<?php
+        <?php
     }
 }
