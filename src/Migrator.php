@@ -42,8 +42,9 @@ class Migrator {
 
 		self::$mode = self::ExtractMode( $post_meta, $mode );
 		if ( self::$mode === Enums\Mode::Unknown ) {
-			$errors->add( 'post_not_found', __( "Unable to define the migration type (update|delete|insert) for post id: {$post_id}", 'wp-helper-migrations' ) );
-
+            if ($errors !== null) {
+                $errors->add('post_not_found', __("Unable to define the migration type (update|delete|insert) for post id: {$post_id}", 'wp-helper-migrations'));
+            }
 			return false;
 		}
 
@@ -74,6 +75,8 @@ class Migrator {
 
 		return $postMetaGenerator->Generate( $meta_data );
 	}
+
+    // public static function GetMenu()
 
 	public static function Run(): int {
 		global $wpdb;
